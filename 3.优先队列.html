@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>优先队列</title>
+  </head>
+  <body>
+    <h3>每个元素不再是一个数据，还包含数据的优先级</h3>
+    <h3>在添加数据的过程中，根据优先级放入正确的位置</h3>
+    <script>
+      function PriorityQueue() {
+        // 内部类： 在类中再封装一个类，表示带优先级的数据
+        function QueueElement(element, priority) {
+          this.element = element;
+          this.priority = priority;
+        }
+        // 封装属性
+        this.items = [];
+
+        // 1.实现按照优先级插入方法
+        PriorityQueue.prototype.enqueue = (element, priority) => {
+          // 创建QueueElement对象
+          let queueElement = new QueueElement(element, priority);
+
+          // 判断队列是否为空
+          if (this.items.length == 0) {
+            this.items.push(queueElement);
+          } else {
+            // 定义一个变量记录是否成功
+            let added = false;
+            for (let i of this.items) {
+              // 让新插入的元素和原有元素进行优先级比较（proority越小，优先级越大）
+              if (queueElement.priority < i.priority) {
+                // 新插入的优先级较高
+                this.items.splice(i, 0, queueElement);
+                added = true;
+                break;
+              }
+            }
+            // 新元素没有成功插入，就把它放到队列的最后边
+            if (!added) {
+              this.items.push(queueElement);
+            }
+          }
+        };
+        // 删除前端元素
+        PriorityQueue.prototype.dequeue = () => {
+          return this.items.shift();
+        };
+        // 查看前端元素
+        PriorityQueue.prototype.front = () => {
+          return this.items[0];
+        };
+        // 是否为空
+        PriorityQueue.prototype.isEmpty = () => {
+          return this.items.length == 0;
+        };
+        // 元素的个数
+        PriorityQueue.prototype.size = () => {
+          return this.items.length;
+        };
+        // 以字符串形式输出队列元素
+        PriorityQueue.prototype.toString = () => {
+          let resultString = "";
+          for (let i of this.items) {
+            resultString += i.element + "-" + i.priority + " ";
+          }
+          return resultString;
+        };
+      }
+
+      // 测试代码
+      let pq = new PriorityQueue();
+      pq.enqueue("Tom", 111);
+      pq.enqueue("Hellen", 200);
+      pq.enqueue("Mary", 30);
+      pq.enqueue("Gogo", 27);
+      // 打印修改过后的优先队列对象
+      console.log(pq.toString());
+    </script>
+  </body>
+</html>

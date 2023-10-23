@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>单向链表</title>
+  </head>
+  <body>
+    <div>
+      <h2>总结</h2>
+      <p>封装单向链表类（注意需要封装一个内部类：节点类</p>
+      <div>
+        <h3>一共有10个方法</h3>
+        <ul>
+            <li>append（element）：向链表尾部添加一个新的项</li>
+            <li>insert（position，element）：向链表的特定位置插入一个新的项</li>
+            <li>get（position）：获取对应位置的元素；</li>
+            <li>indexOf（element）：返回元素在链表中的索引。如果链表中没有该元素就返回-1；</li>
+            <li>update（position，element）：修改某个位置的元素；</li>
+            <li>removeAt（position）：从链表的特定位置移除一项；</li>
+            <li>remove（element）：从链表中移除一项；</li>
+            <li>isEmpty（）：如果链表中不包含任何元素，返回trun，如果链表长度大于0则返回false；</li>
+            <li>size（）：返回链表包含的元素个数，与数组的length属性类似；</li>
+            <li>toString（）：由于链表项使用了Node类，就需要重写继承自JavaScript对象默认的toString方法，让其只输出元素的值；</li>
+        </ul>
+      </div>
+    </div>
+    <script>
+      // 封装单向链表类
+      function LinkList() {
+        // 封装一个内部类：节点类
+        function Node(data) {
+          this.data = data;
+          this.next = null;
+        }
+        // 属性
+        // 属性head指向链表的第一个节点
+        this.head = null;
+        this.length = 0;
+        // 方法
+
+        // append
+        LinkList.prototype.append = (data) => {
+          console.log("append", this);
+          // 创建新节点
+          let newNode = new Node(data);
+          // 添加新节点
+          // 情况1:只有一个节点的时候
+          if (this.length == 0) {
+            this.head = newNode;
+          } else {
+            // 情况2:节点数大于1的时候，在链表的最后添加新节点
+            // 让变量current指向第一个节点
+            let current = this.head;
+
+            while (current.next) {
+              current = current.next;
+            }
+            // 最后节点的next指向新节点
+            current.next = newNode;
+          }
+          // 添加完了链表长度+1
+          this.length += 1;
+        };
+
+        // toString方法
+        LinkList.prototype.toString = () => {
+          // 定义变量
+          let current = this.head;
+          let listString = "";
+          // 循环获取一个个节点
+          while (current) {
+            listString += current.data + " ";
+            current = current.next;
+          }
+          return listString;
+        };
+
+        // 插入(制造一个记录前节点的标志，来完成插入)
+        LinkList.prototype.insert = (position, data) => {
+          // 理解positon的含义：position=0表示新界点插入后要成为第1个节点，position=2表示新界点插入后要成为第3个节点
+          // position  越界处理
+          if (position < 0 || position > this.length) {
+            return false;
+          }
+
+          // 据data创建newNode
+          let newNode = new Node(data);
+          // 插入节点
+          // 情况1： 插入位置为0
+          if (position == 0) {
+            newNode.next = this.head;
+            this.head = newNode;
+          } else {
+            let index = 0;
+            let previous = null;
+            let current = this.head;
+            // 步骤1：通过while循环使得变量current指向position位置的后一个节点
+            while (index++ < position) {
+              //2: 在current指向下一个节点之前，让previous指向current当前指向的节点
+              previous = current;
+              current = current.next;
+            }
+            // 3: 通过变量current（此时current已经指向position位置的后一个节点），使得newNode指向position位置的后一个节点
+            newNode.next = current;
+            previous.next = newNode;
+          }
+          this.length += 1;
+          return true;
+        };
+
+        //实现get方法
+        LinkList.prototype.get = (position) => {
+          // 1.越界判断
+          if (position < 0 || position >= this.length) {
+            console.log("get", position);
+            console.log("get", this.length);
+            return null;
+          }
+          // 2.获取指定的position位置的后一个节点的data
+          // 同样使用一个变量间接操作节点
+          let current = this.head;
+          let index = 0;
+          while (index++ < position) {
+            current = current.next;
+          }
+          return current.data;
+        };
+
+        //   indexOf  返回元素在链表中的索引
+        LinkList.prototype.indexOf = (data) => {
+          // 定义变量
+          let current = this.head;
+          let index = 0;
+
+          // 开始查找
+          while (current) {
+            if (current.data == data) {
+              return index;
+            }
+            current = current.next;
+            index += 1;
+          }
+
+          // 遍历完链表没有找到返回-1
+          return -1;
+        };
+
+        // update方法: 修改某个位置的元素
+        LinkList.prototype.update = (position, newData) => {
+          // 越界判断
+          if (position < 0 || position >= this.length) {
+            return false;
+          }
+          // 查找正确的节点
+          let current = this.head;
+          let index = 0;
+          while (index++ < position) {
+            current = current.next;
+          }
+          // 将position位置的后一个节点的data修改成newData
+          current.data = newData;
+          return true;
+        };
+
+        // removeAt 从链表的特定位置移除一项
+        LinkList.prototype.removeAt = (position) => {
+          if (position < 0 || position >= this.length) {
+            return null;
+          }
+
+          // 删除元素
+          // 1. position为0
+          let current = this.head;
+          if (position == 0) {
+            this.head = this.head.next;
+          } else {
+            let index = 0;
+            let previous = null;
+            while (index++ < position) {
+              previous = current;
+              current = current.next;
+            }
+            // 循环结束后，current指向position后一个节点，previous指向current前一个节点
+            // 再使前一个节点的next指向current的next
+            previous.next = current.next;
+          }
+          this.length -= 1;
+
+          // 返回被删除节点的data，为此current定义在最上边
+          return current.data;
+        };
+
+        // 从列表中移除一项
+        LinkList.prototype.remove = (element) => {
+          let position = this.indexOf(element);
+          return this.removeAt(position);
+        };
+
+        // isEmpty
+        LinkList.prototype.isEmpty = () => {
+          return this.length == 0;
+        };
+
+        // size
+        LinkList.prototype.size = () => {
+          return this.length;
+        };
+      }
+
+      //测试代码
+      //1.创建LinkList
+      let list = new LinkList();
+
+      //2.插入数据
+      list.append("aaa");
+      list.append("bbb");
+      list.append("ccc");
+      console.log(list);
+
+      //3.测试get方法
+      console.log(list.get(0));
+      console.log(list.indexOf("ccc"));
+      console.log(list.update(1, "bbb"));
+      console.log(list.removeAt(1));
+      //remove方法
+      console.log(list.remove("aaa"));
+      console.log(list);
+      //isEmpty方法
+      console.log(list.isEmpty());
+      //size方法
+      console.log(list.size());
+      console.log(list);
+    </script>
+  </body>
+</html>
